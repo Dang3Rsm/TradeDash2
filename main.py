@@ -4,9 +4,10 @@ from dhan import Dhan
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
+BASE_URL = os.getenv("BASE_URL")
 CLIENT_ID =  os.getenv("CLIENT_ID")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-D = Dhan(CLIENT_ID, ACCESS_TOKEN)
+D = Dhan(BASE_URL,CLIENT_ID, ACCESS_TOKEN)
 
 @app.route('/')
 def index():
@@ -16,28 +17,21 @@ def index():
 def place_order():
     if request.method == 'POST':
         symbol = request.form['symbol']
+        exchange = request.form['exchange']
+        segment = "EQ"
         quantity = request.form['quantity']
         price = request.form['price']
-        transaction_type = request.form['transaction_type']
-        security_id = request.form['security_id']
-        order_type = "LIMIT"
-        product_type = "CNC"
+        transactionType = request.form['transaction_type']
+        orderType = "LIMIT"
+        prdouctType = "CNC"
         validity = "DAY"
         exchange_segment = "BSE_EQ"
-        data = D.place_order(
-            security_id, exchange_segment, transaction_type,
-            int(quantity), order_type, product_type, float(price), validity
-        )
-
-        if data['status'] == 'failure':
-            flash("Failed to place the order.", "danger")
-        else:
-            order_id = data['data']['orderId']
-            flash(f"Order placed successfully with order ID: {order_id}", "success")
-
+        order_id = place_order(symbol,exchange,segment,transactionType,prdouctType,orderType,validity,quantity,price)
+        flash(f"Order placed successfully with order ID: {order_id}", "success")
         return redirect(url_for('place_order'))
     else:
         # Added some hardcoded values
+        exchanges = {"NSE","BSE","MCX"}
         symbols = {
             "RELIANCE":500325,
             "TCS": 532540,
@@ -48,13 +42,12 @@ def place_order():
             "HINDUNILVR": 500696,
             "AXISBANK": 532215
         }
-
-        return render_template('place_order.html',symbols=symbols)
+        return render_template('place_order.html',symbols=symbols,exchanges=exchanges)
 
 @app.route('/holdings')
 def holdings():
     holdings = D.get_holdings()
-    data = holdings['data']
+    data = holdings
     if not data:
         flash("Currently 0 Holdings",'warning')
         print("NO HOLDINGS")
