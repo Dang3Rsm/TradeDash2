@@ -23,41 +23,43 @@ class Dhan:
     def post(self, endpoint=None, payload=None):
         return self.req('POST', endpoint, data=payload)
     
-    def place_order(self,symbol,exchange,segment,transactionType,prdouctType,orderType,validity,quantity=0,price=0):
+    def place_order(self,symbol,exchange,segment,transactionType,productType,orderType,validity,quantity=0,price=0):
         securityId = self.get_security_data(symbol,exchange)
         exchangeSegment = exchange + "_"+segment
         payload = {
             "dhanClientId": self.client_id,
             "transactionType": transactionType,
             "exchangeSegment": exchangeSegment,
-            "productType": prdouctType,
+            "productType": productType,
             "orderType": orderType,
             "validity": validity,
             "securityId": securityId,
             "quantity": quantity,
             "price": price
         }
-        response = D.req(method='POST',endpoint='/orders',payload=payload)
-        order_id = response["orderId"]
-        return order_id
+        response = self.req(method='POST',endpoint='/orders',payload=payload)
+        if 'orderId' in response:
+            return response["orderId"]
+        else:
+            return response.get('internalErrorMessage')
     
     def get_orders_list(self):
-        response = D.req(method='GET',endpoint='/orders')
+        response = self.req(method='GET',endpoint='/orders')
         return response
 
     def get_holdings(self):
-        response = D.req(method='GET',endpoint='/holdings')
+        response = self.req(method='GET',endpoint='/holdings')
         return response
     
     def get_positions(self):
-        response = D.req(method='GET',endpoint='/positions')
+        response = self.req(method='GET',endpoint='/positions')
         return response
 
     def connectScripDB(self):
         return sqlite3.connect("scripDB.sqlite3")
 
     def get_security_data(self, symbol,exchange):
-        conn = D.connectScripDB()
+        conn = self.connectScripDB()
         cursor = conn.cursor()
         cursor.execute("SELECT SEM_EXM_EXCH_ID, SEM_SMST_SECURITY_ID FROM scrip_master_table WHERE SEM_TRADING_SYMBOL=?", (symbol,))
         data = cursor.fetchall()
@@ -68,7 +70,7 @@ class Dhan:
         return data
     
     def get_unique_symbols(self,exchange):
-        conn = D.connectScripDB()
+        conn = self.connectScripDB()
         cursor = conn.cursor()
         cursor.execute("SELECT SEM_TRADING_SYMBOL FROM scrip_master_table WHERE SEM_EXM_EXCH_ID=?", (exchange,))
         data = cursor.fetchall()
@@ -89,8 +91,8 @@ if __name__ == "__main__":
     # d = D.get_holdings()
     # d = D.get_positions()
     # d = D.get_security_data("SBIN","BSE")
-    # d = D.place_order("SBIN","NSE","EQ","BUY","CNC","LIMIT","DAY",quantity=1,price=830)
+    # d = D.place_order("SBIN","NSE","EQ","BUY","CNC","LIMIT","DAY",quantity=1,price=2000)
     # d = D.get_unique_symbols("NSE")
-    d = D.get_orders_list()
+    # d = D.get_orders_list()
     print(d)
     print("===KILLED===")

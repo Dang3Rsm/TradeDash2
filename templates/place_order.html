@@ -12,7 +12,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group" id="symbol_input" style="display: none;">
+            <div class="form-group" id="symbol_input">
                 <label for="symbol">Trade Symbol:</label>
                 <input type="text" class="form-control" id="symbol" name="symbol">
             </div>
@@ -38,17 +38,4 @@
             <button type="Place Order" class="btn btn-primary">Submit</button>
         </form>
     </div>
-
-    <script>
-        document.getElementById('symbol_or_symbol').addEventListener('change', function() {
-            var option = this.value;
-            if (option === 'symbol') {
-                document.getElementById('symbol_dropdown').style.display = 'block';
-                document.getElementById('symbol_input').style.display = 'none';
-            } else {
-                document.getElementById('symbol_dropdown').style.display = 'none';
-                document.getElementById('symbol_input').style.display = 'block';
-            }
-        });
-    </script>
 {% endblock %}

@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 from dhan import Dhan
-
+from dotenv import load_dotenv
+load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 BASE_URL = os.getenv("BASE_URL")
@@ -26,7 +27,7 @@ def place_order():
         prdouctType = "CNC"
         validity = "DAY"
         exchange_segment = "BSE_EQ"
-        order_id = place_order(symbol,exchange,segment,transactionType,prdouctType,orderType,validity,quantity,price)
+        order_id = D.place_order(symbol,exchange,segment,transactionType,prdouctType,orderType,validity,quantity,price)
         flash(f"Order placed successfully with order ID: {order_id}", "success")
         return redirect(url_for('place_order'))
     else:
@@ -53,6 +54,15 @@ def holdings():
         print("NO HOLDINGS")
     print(data)
     return render_template('holdings.html', holdings=data)
+
+@app.route('/current_orders')
+def current_orders():
+    orders = D.get_orders_list()
+    data = orders
+    if not data:
+        flash("Currently 0 Orders",'warning')
+        print("NO CURRENT ORDERS")
+    return render_template('current_orders.html', orders=data)
 
 
 @app.route('/live_feed')
