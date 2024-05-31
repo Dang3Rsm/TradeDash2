@@ -39,6 +39,10 @@ class Dhan:
         order_id = response["orderId"]
         return order_id
     
+    def get_holdings(self):
+        response = D.req(method='GET',endpoint='/orders')
+        return response
+
     def get_security_data(self,symbol):
         pass
 
@@ -46,8 +50,11 @@ if __name__ == "__main__":
     print("===EXECUTED===")
 
     BASE_URL = os.getenv("BASE_URL")
+    print(BASE_URL)
     CLIENT_ID = os.getenv("CLIENT_ID")
+    print(CLIENT_ID)
     ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
     D = Dhan(BASE_URL,CLIENT_ID,ACCESS_TOKEN)
-    
+    #d = D.get_holdings()
+    #print(d)
     print("===KILLED===")
