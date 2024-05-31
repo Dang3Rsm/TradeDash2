@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1 class="mt-3">Place Order</h1>
+    <div class="mt-3">
+        <form method="post">
+            <div class="form-group" id="exchange_dropdown">
+                <label for="exchange">Symbol:</label>
+                <select class="form-control" id="exchange" name="exchange">
+                    {% for exchange in exchanges %}
+                        <option value="{{ exchange }}">{{ exchange }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" id="symbol_input" style="display: none;">
+                <label for="symbol">Security ID:</label>
+                <input type="text" class="form-control" id="symbol" name="symbol">
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" class="form-control" id="quantity" name="quantity" value=1>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" class="form-control" id="price" name="price" value=1>
+            </div>
+            <div class="form-group">
+                <label for="transaction_type">Transaction Type:</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="transaction_type" id="buy" value="BUY" checked>
+                    <label class="form-check-label" for="buy">Buy</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="transaction_type" id="sell" value="SELL">
+                    <label class="form-check-label" for="sell">Sell</label>
+                </div>
+            </div>
+            <button type="Place Order" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('symbol_or_symbol').addEventListener('change', function() {
+            var option = this.value;
+            if (option === 'symbol') {
+                document.getElementById('symbol_dropdown').style.display = 'block';
+                document.getElementById('symbol_input').style.display = 'none';
+            } else {
+                document.getElementById('symbol_dropdown').style.display = 'none';
+                document.getElementById('symbol_input').style.display = 'block';
+            }
+        });
+    </script>
+{% endblock %}

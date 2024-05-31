@@ -41,6 +41,10 @@ class Dhan:
         order_id = response["orderId"]
         return order_id
     
+    def get_orders_list(self):
+        response = D.req(method='GET',endpoint='/orders')
+        return response
+
     def get_holdings(self):
         response = D.req(method='GET',endpoint='/holdings')
         return response
@@ -49,16 +53,29 @@ class Dhan:
         response = D.req(method='GET',endpoint='/positions')
         return response
 
-    def get_security_data(self, symbol,exchangeSegment):
-        conn = sqlite3.connect("scripDB.sqlite3")
+    def connectScripDB(self):
+        return sqlite3.connect("scripDB.sqlite3")
+
+    def get_security_data(self, symbol,exchange):
+        conn = D.connectScripDB()
         cursor = conn.cursor()
         cursor.execute("SELECT SEM_EXM_EXCH_ID, SEM_SMST_SECURITY_ID FROM scrip_master_table WHERE SEM_TRADING_SYMBOL=?", (symbol,))
         data = cursor.fetchall()
         conn.close()
         data = set(data)        # remove duplicates
         data = dict(data)       # easy accesss for keys
-        data = data[exchangeSegment]
+        data = data[exchange]
         return data
+    
+    def get_unique_symbols(self,exchange):
+        conn = D.connectScripDB()
+        cursor = conn.cursor()
+        cursor.execute("SELECT SEM_TRADING_SYMBOL FROM scrip_master_table WHERE SEM_EXM_EXCH_ID=?", (exchange,))
+        data = cursor.fetchall()
+        conn.close()
+        data = set(data)        # remove duplicates
+        data = list(data)       # list of symbols
+        return None
 
 if __name__ == "__main__":
     print("===EXECUTED===")
@@ -72,6 +89,8 @@ if __name__ == "__main__":
     # d = D.get_holdings()
     # d = D.get_positions()
     # d = D.get_security_data("SBIN","BSE")
-    d = D.place_order("SBIN","NSE","EQ","BUY","CNC","LIMIT","DAY",quantity=1,price=830)
+    # d = D.place_order("SBIN","NSE","EQ","BUY","CNC","LIMIT","DAY",quantity=1,price=830)
+    # d = D.get_unique_symbols("NSE")
+    d = D.get_orders_list()
     print(d)
     print("===KILLED===")
