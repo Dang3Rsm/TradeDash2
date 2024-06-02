@@ -67,7 +67,7 @@ class Dhan:
         data = set(data)        # remove duplicates
         data = dict(data)       # easy accesss for keys
         data = data[exchange]
-        return data
+        return data|None
     
     def get_unique_symbols(self,exchange):
         conn = self.connectScripDB()

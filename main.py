@@ -24,26 +24,20 @@ def place_order():
         price = request.form['price']
         transactionType = request.form['transaction_type']
         orderType = "LIMIT"
-        prdouctType = "CNC"
+        productType = "CNC"
         validity = "DAY"
-        exchange_segment = "BSE_EQ"
-        order_id = D.place_order(symbol,exchange,segment,transactionType,prdouctType,orderType,validity,quantity,price)
-        flash(f"Order placed successfully with order ID: {order_id}", "success")
+        order_id = D.place_order(symbol,exchange,segment,transactionType,productType,orderType,validity,quantity,price)
+        if isinstance(order_id, int):
+            message = f"Order placed successfully with order ID: {order_id}"
+            message_color = "success"
+        else:
+            message = order_id
+            message_color = "warning"
+        flash(message, message_color)
         return redirect(url_for('place_order'))
     else:
-        # Added some hardcoded values
         exchanges = {"NSE","BSE","MCX"}
-        symbols = {
-            "RELIANCE":500325,
-            "TCS": 532540,
-            "HDFCBANK": 500180,
-            "INFY": 500209,
-            "ICICIBANK": 532174,
-            "SBIN": 500112,
-            "HINDUNILVR": 500696,
-            "AXISBANK": 532215
-        }
-        return render_template('place_order.html',symbols=symbols,exchanges=exchanges)
+        return render_template('place_order.html',exchanges=exchanges)
 
 @app.route('/holdings')
 def holdings():
