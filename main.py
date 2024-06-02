@@ -57,7 +57,7 @@ def holdings():
 def current_orders():
     orders = D.get_orders_list()
     data = orders
-    if not data:
+    if data==[]:
         flash("Currently 0 Orders",'warning')
     return render_template('current_orders.html', orders=data)
 
