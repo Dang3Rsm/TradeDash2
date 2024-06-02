@@ -66,8 +66,11 @@ class Dhan:
         conn.close()
         data = set(data)        # remove duplicates
         data = dict(data)       # easy accesss for keys
-        data = data[exchange]
-        return data|None
+        try:
+            data = data[exchange]
+        except KeyError:
+            data = None
+        return data
     
     def get_unique_symbols(self,exchange):
         conn = self.connectScripDB()

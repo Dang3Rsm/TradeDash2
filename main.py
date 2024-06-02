@@ -30,9 +30,12 @@ def place_order():
         if isinstance(order_id, int):
             message = f"Order placed successfully with order ID: {order_id}"
             message_color = "success"
+        elif order_id == "Market is Closed! Want to place an offline order?":
+            message = "Market is Closed!"
+            message_color = "info"
         else:
-            message = order_id
-            message_color = "warning"
+            message = "Error: Cannot place an order"
+            message_color = 'warning'
         flash(message, message_color)
         return redirect(url_for('place_order'))
     else:
@@ -43,10 +46,11 @@ def place_order():
 def holdings():
     holdings = D.get_holdings()
     data = holdings
-    if not data:
+    if data["internalErrorMessage"]:
         flash("Currently 0 Holdings",'warning')
-        print("NO HOLDINGS")
-    print(data)
+        data = []
+    else:
+        data = data["data"]
     return render_template('holdings.html', holdings=data)
 
 @app.route('/current_orders')
@@ -55,13 +59,19 @@ def current_orders():
     data = orders
     if not data:
         flash("Currently 0 Orders",'warning')
-        print("NO CURRENT ORDERS")
     return render_template('current_orders.html', orders=data)
 
 
 @app.route('/live_feed')
 def live_feed():
     return render_template('live_feed.html')
+
+
+@app.route('/postback', methods=['POST'])
+def postback():
+    postback_data = request.json
+    print("Received postback data:")
+    print(postback_data)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
